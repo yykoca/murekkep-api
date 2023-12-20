@@ -13,10 +13,11 @@ class Paragraph
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type:'text')]
     private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'paragraphs')]
+    #[ORM\JoinColumn(nullable:false)]
     private ?Article $article = null;
 
     public function getId(): ?int

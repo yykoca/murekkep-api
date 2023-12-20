@@ -32,8 +32,14 @@ class Article
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
 
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Paragraph::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Paragraph::class, cascade: ['persist', 'remove'])]
     private Collection $paragraphs;
+
+    #[ORM\Column]
+    private float $readingTime;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {
@@ -131,6 +137,30 @@ class Article
                 $paragraph->setArticle(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReadingTime(): ?float
+    {
+        return $this->readingTime;
+    }
+
+    public function setReadingTime(float $readingTime): self
+    {
+        $this->readingTime = $readingTime;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
