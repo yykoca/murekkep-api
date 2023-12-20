@@ -4,10 +4,14 @@ namespace App\Entity;
 
 use App\Repository\ParagraphRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ParagraphRepository::class)]
 class Paragraph
-{
+{    
+
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

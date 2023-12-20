@@ -41,8 +41,6 @@ class ArticleController extends AbstractController
             $article->setName($requestData['name'])
                     ->setTitle($requestData['title'])
                     ->setDescription($requestData['description'])
-                    ->setCreatedAt(new \DateTimeImmutable())
-                    ->setUpdatedAt(new \DateTimeImmutable())
                     ->setSlug($slugifyService->slugify($requestData['title']));
 
             foreach ($requestData['paragraphs'] as $content) {
@@ -115,7 +113,6 @@ class ArticleController extends AbstractController
             }
             
             $article->setReadingTime($readingTimeService->estimateReadingTime($article));
-            $article->setUpdatedAt(new \DateTimeImmutable());
 
             $entityManager->flush();
 
