@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ParagraphRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ParagraphRepository::class)]
 class Paragraph
@@ -15,13 +16,16 @@ class Paragraph
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['paragraph'])]
     private ?int $id = null;
 
     #[ORM\Column(type:'text')]
+    #[Groups(['paragraph'])]
     private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'paragraphs')]
     #[ORM\JoinColumn(nullable:false)]
+    #[Groups(['paragraph'])]
     private ?Article $article = null;
 
     public function getId(): ?int
