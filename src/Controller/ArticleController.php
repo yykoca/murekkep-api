@@ -6,7 +6,6 @@ use App\Entity\Article;
 use App\Entity\Paragraph;
 use App\Repository\ArticleRepository;
 use App\Service\ReadingTimeService;
-use App\Service\SlugifyService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,7 +27,7 @@ class ArticleController extends AbstractController
 
     #[Route('/new', name: 'article_new', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SlugifyService $slugifyService, ReadingTimeService $readingTimeService): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService): Response
     {
         $requestData = json_decode($request->getContent(), true);
 
@@ -40,8 +39,7 @@ class ArticleController extends AbstractController
             $article = new Article();
             $article->setName($requestData['name'])
                     ->setTitle($requestData['title'])
-                    ->setDescription($requestData['description'])
-                    ->setSlug($slugifyService->slugify($requestData['title']));
+                    ->setDescription($requestData['description']);
 
             foreach ($requestData['paragraphs'] as $content) {
                 $paragraph = new Paragraph();
@@ -73,7 +71,7 @@ class ArticleController extends AbstractController
 
     #[Route('/{slug}/edit', name: 'article_edit', methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
-    public function update(Article $article, Request $request, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService, SlugifyService $slugifyService): Response
+    public function update(Article $article, Request $request, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService): Response
     { 
         try {
             $requestData = json_decode($request->getContent(), true);
@@ -84,7 +82,6 @@ class ArticleController extends AbstractController
 
             if (isset($requestData['title']) && $requestData['title'] !== $article->getTitle()) {
                 $article->setTitle($requestData['title']);
-                $article->setSlug($slugifyService->slugify($article->getTitle()));
             }
     
             if (isset($requestData['name']) && $requestData['name'] !== $article->getName()) {

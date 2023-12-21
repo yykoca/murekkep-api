@@ -7,6 +7,7 @@ use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Slug;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -33,6 +34,7 @@ class Article
 
     #[Groups(['paragraph'])]
     #[ORM\Column(length: 255, unique: true)]
+    #[Slug(fields: ['title'])]
     private ?string $slug = null;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Paragraph::class, cascade: ['persist', 'remove'])]
