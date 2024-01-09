@@ -16,13 +16,9 @@ class ReadingTimeService {
         
         $title = $article->getTitle();
         $description = $article->getDescription();
-        $paragraphs = $article->getParagraphs()->toArray();
-    
-        $paragraphsText = implode(' ', array_map(function($paragraph) {
-            return $paragraph->getContent();
-        }, $paragraphs)); 
+        $content = $article->getContent();
         
-        $totalWords = str_word_count($title) + str_word_count($description) + str_word_count($paragraphsText);
+        $totalWords = str_word_count($title) + str_word_count($description) + str_word_count($content);
         
         $minutes = ceil($totalWords / $wpm);
         return $minutes;

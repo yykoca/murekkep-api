@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ParagraphRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ParagraphRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['paragraph:read', 'article:read']],
+)]
 class Paragraph
 {    
 
@@ -16,16 +20,16 @@ class Paragraph
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['paragraph'])]
+    #[Groups(['paragraph:read', 'article:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type:'text')]
-    #[Groups(['paragraph'])]
+    #[Groups(['paragraph:read', 'article:read'])]
     private ?string $content = null;
-
+    
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'paragraphs')]
     #[ORM\JoinColumn(nullable:false)]
-    #[Groups(['paragraph'])]
+    #[Groups(['paragraph:read'])]
     private ?Article $article = null;
 
     public function getId(): ?int

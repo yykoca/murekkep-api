@@ -2,17 +2,21 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['article:read']],
+)]
 class Article
 {
 
@@ -21,32 +25,54 @@ class Article
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[ApiProperty(identifier:false)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['article:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['article:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['article:read'])]
     private ?string $title = null;
 
-    #[Groups(['paragraph'])]
     #[ORM\Column(length: 255, unique: true)]
     #[Slug(fields: ['title'])]
+    #[Groups(['article:read'])]
+    #[ApiProperty(identifier:true)]
     private ?string $slug = null;
 
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: Paragraph::class, cascade: ['persist', 'remove'])]
+    #[Groups(['article:read'])]
     private Collection $paragraphs;
-
+    
     #[ORM\Column]
+    #[Groups(['article:read'])]
     private float $readingTime;
 
+    #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['article:read'])]
+    private ?string $content = null;
+
+    #[ORM\Column(length: 20)]
+    #[Groups(['article:read'])]
+    private ?string $image = null;
+    
     public function __construct()
     {
         $this->paragraphs = new ArrayCollection();
     }
+    
+    #[Groups(['article:read'])]
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
 
     public function getId(): ?int
     {
@@ -139,6 +165,30 @@ class Article
     public function setReadingTime(float $readingTime): self
     {
         $this->readingTime = $readingTime;
+
+        return $this;
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

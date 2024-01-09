@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('article')]
+#[Route('articles')]
 class ArticleController extends AbstractController
 {
     #[Route('/', name: 'article_index')]
@@ -39,7 +39,9 @@ class ArticleController extends AbstractController
             $article = new Article();
             $article->setName($requestData['name'])
                     ->setTitle($requestData['title'])
-                    ->setDescription($requestData['description']);
+                    ->setDescription($requestData['description'])
+                    ->setContent($requestData['content'])
+                    ->setImage($requestData['image']);
 
             foreach ($requestData['paragraphs'] as $content) {
                 $paragraph = new Paragraph();
@@ -56,6 +58,30 @@ class ArticleController extends AbstractController
             return $this->json(['message' => 'Saved new article with id ' . $article->getId()]);
         } catch (\Exception $e) {
             return $this->json(['error' => 'An error occurred while saving the article.'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/{slug}/new-paragraph', name: 'article_paragraph_new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
+    public function newParagraph(Article $article, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {   
+        $requestData = json_decode($request->getContent(), true);
+
+        if (!isset($requestData['content']) ) {
+            throw new \InvalidArgumentException('"Content" must be provided for create.');
+        }
+        
+        $paragraph = new Paragraph();
+        $paragraph->setContent($requestData['content']);
+        $article->addParagraph($paragraph);
+
+        $entityManager->persist($paragraph);
+        $entityManager->flush();
+
+        return $this->json(['message' => 'Saved new paragraph with id ' . $paragraph->getId()]);
+        try {
+        } catch (\Exception $e) {
+            return $this->json(['error' => 'An error occurred while saving the paragraph.'], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -119,7 +145,7 @@ class ArticleController extends AbstractController
         }
     }
 
-    #[Route('/{slug}', name: 'article_delete', methods: ['DELETE'])]
+    #[Route('/{slug}/delete', name: 'article_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
     public function delete(Article $article, EntityManagerInterface $entityManager): Response
     {
