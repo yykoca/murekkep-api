@@ -19,6 +19,7 @@ class RegistrationController extends AbstractController
     {
         
         $email = $request->request->get('email');
+        $name = $request->request->get('name');
         $user = $userRepository->findOneBy(['email' => $email]);
 
         if ($user) {
@@ -36,6 +37,7 @@ class RegistrationController extends AbstractController
             $plaintextPassword
         );
         $user->setPassword($hashedPassword);
+        $user->setName($name);
         
         $entityManager->persist($user);
         $entityManager->flush();
