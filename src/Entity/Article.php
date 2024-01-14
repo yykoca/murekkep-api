@@ -61,6 +61,10 @@ class Article
     #[ORM\Column(length: 20)]
     #[Groups(['article:read'])]
     private ?string $image = null;
+
+    #[ORM\ManyToOne(inversedBy: 'articles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $author = null;
     
     public function __construct()
     {
@@ -189,6 +193,18 @@ class Article
     public function setImage(string $image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): static
+    {
+        $this->author = $author;
 
         return $this;
     }
