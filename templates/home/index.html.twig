@@ -1,21 +1,67 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello World!{% endblock %}
+{% block title %}Mürekkep API | Personal Blog{% endblock %}
 
 {% block body %}
 <style>
-    .container { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    * { margin: 0; padding: 0 }
+    .container { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif }
+    .header { display: flex; align-items: center; padding: 24px }
+    .header > div { display: flex; flex-direction: column; width: 100%; justify-content: center; margin-left: 20px }
+    img { height: 60px; aspect-ratio: 1/1 }
+    section, article { padding: 16px }
+    h3 { margin-left: 20px; color: #2D3250 }
+    h4 { background-color: #424769; padding: 0.5em; color: white }
+    .request { border: 3px solid #424769 }
+    .content { display: block; overflow: auto; padding: 1em; font-size: 0.8em }
+    pre { width: 100%; margin: 0; padding: 0; }
+    .title { padding: 1em; display: flex; align-items: center; border-bottom: 1px solid #F6B17A }
+    .title > span { background-color: #7077A1; padding: 0.4em; margin-right: 1em; color: white; border-radius: 15% }
+    .title > a { padding: 0.4em; text-decoration: underline; font-weight: bold; letter-spacing: 3px; color: #424769  }
 </style>
 
 <div class="container">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <section class="header">
+        <img src="/logo-black.png" alt="logo">
+        <div>
+            <h1>Mürekkep API</h1>
+            <p>Personal Blog</p>
+        </div>
+    </section>
 
-    This friendly message is coming from:
-    <ul>
-        <li><a href="{{ path('article_index') }}">Articles</a></li>
-        <li>Paragraphs</li>
-        <li>Users</li>
-        <li>Contact</li>
-    </ul>
+    <section>
+        <h2>Usage</h2>
+
+        <article>
+            <h3>Articles</h3>
+            <div class="request">
+                <h4>Get all articles</h4>
+                <div class="content">
+                    <div class="title">
+                        <span>GET</span>
+                        <a href="{{ path('article_index') }}">https://yasarkoca.xyz/articles</a>
+                    </div>
+                    <pre>
+                        <code>
+[
+    {
+        "id": 11,
+        "name": "Temporibus totam iure voluptatem inventore corrupti.",
+        "description": "Temporibus totam iure voluptatem inventore corrupti.",
+        "title": "Temporibus totam 1 iure voluptatem inventore corrupti.",
+        "slug": "temporibus-totam-1-iure-voluptatem-inventore-corrupti",
+        "readingTime": 6,
+        "createdAt": "2024-01-13T07:51:37+00:00",
+        "updatedAt": "2024-01-13T07:51:37+00:00",
+        "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique impedit repellendus cupiditate quisquam ab obcaecati? Unde minus incidunt, illo deserunt quam dolorum architecto ut, ad laborum qui consectetur quisquam magnam dolor aspernatur ullam nesciunt iste error quibusdam! In odit perspiciatis minima quos officiis ipsa fugit ad!"
+    }   
+]
+                        </code>
+                    </pre>
+                </div>
+
+            </div>
+        </article>
+    </section>
 </div>
 {% endblock %}
