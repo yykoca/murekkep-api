@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('articles')]
+#[Route('/api/articles')]
 class ArticleController extends AbstractController
 {
     #[Route('/', name: 'article_index')]
