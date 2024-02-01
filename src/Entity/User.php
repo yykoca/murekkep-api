@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,13 +31,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Article::class)]
-    private Collection $articles;
-
-    public function __construct()
-    {
-        $this->articles = new ArrayCollection();
-    }
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Author $author = null;
 
     public function getId(): ?int
     {
@@ -123,32 +116,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Article>
-     */
-    public function getArticles(): Collection
+    public function getAuthor(): ?Author
     {
-        return $this->articles;
+        return $this->author;
     }
 
-    public function addArticle(Article $article): static
+    public function setAuthor(?Author $author): static
     {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Article $article): static
-    {
-        if ($this->articles->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getAuthor() === $this) {
-                $article->setAuthor(null);
-            }
-        }
+        $this->author = $author;
 
         return $this;
     }

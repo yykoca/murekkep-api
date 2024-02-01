@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
@@ -63,8 +65,9 @@ class Article
     private ?string $image = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $author = null;
+    #[Groups(['article:read'])]
+    #[ApiFilter(SearchFilter::class, properties: ['author.id' => 'exact'])]
+    private ?Author $author = null;
     
     public function __construct()
     {
@@ -197,12 +200,12 @@ class Article
         return $this;
     }
 
-    public function getAuthor(): ?User
+    public function getAuthor(): ?Author
     {
         return $this->author;
     }
 
-    public function setAuthor(?User $author): static
+    public function setAuthor(?Author $author): static
     {
         $this->author = $author;
 

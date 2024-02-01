@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Paragraph;
-use App\Entity\User;
+use App\Repository\AuthorRepository;
 use App\Repository\ArticleRepository;
 use App\Service\ReadingTimeService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/articles')]
@@ -29,12 +28,18 @@ class ArticleController extends AbstractController
 
     #[Route('/new', name: 'article_new', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
-    public function new(Request $request, #[CurrentUser] ?User $user, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService, AuthorRepository $authorRepository): Response
     {
         $requestData = json_decode($request->getContent(), true);
 
-        if (!isset($requestData['title']) || !isset($requestData['name']) || !isset($requestData['description']) || !isset($requestData['paragraphs'])) {
-            throw new \InvalidArgumentException('All of "title", "name", "description", and "paragraphs" must be provided for create.');
+        if (
+            !isset($requestData['title']) || 
+            !isset($requestData['name']) || 
+            !isset($requestData['description']) || 
+            !isset($requestData['paragraphs']) ||
+            !isset($requestData['author'])
+            ) {
+            throw new \InvalidArgumentException('All of "title", "name", "description", "paragraphs", and "author" must be provided for create.');
         }
 
         try {
@@ -53,7 +58,9 @@ class ArticleController extends AbstractController
 
             $readingTime = $readingTimeService->estimateReadingTime($article);
             $article->setReadingTime($readingTime);
-            $article->setAuthor($user);
+            
+            $author = $authorRepository->findOneBy(['id' => $requestData['author']]);
+            $article->setAuthor($author);
 
             $entityManager->persist($article);
             $entityManager->flush();
