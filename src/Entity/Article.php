@@ -13,7 +13,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ApiResource(
@@ -25,10 +27,11 @@ class Article
     use TimestampableEntity;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[ApiProperty(identifier:false)]
-    private ?int $id = null;
+    private ?Uuid $id;
 
     #[ORM\Column(length: 255)]
     #[Groups(['article:read'])]
@@ -81,7 +84,7 @@ class Article
     }
 
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
