@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240202001708 extends AbstractMigration
+final class Version20240206231313 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,11 +21,12 @@ final class Version20240202001708 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SEQUENCE paragraph_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE article (id UUID NOT NULL, author_id UUID DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, reading_time DOUBLE PRECISION NOT NULL, content TEXT NOT NULL, image VARCHAR(20) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE article (id UUID NOT NULL, author_id UUID DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, reading_time DOUBLE PRECISION NOT NULL, content TEXT NOT NULL, image VARCHAR(20) NOT NULL, authored_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_23A0E66989D9B62 ON article (slug)');
         $this->addSql('CREATE INDEX IDX_23A0E66F675F31B ON article (author_id)');
         $this->addSql('COMMENT ON COLUMN article.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN article.author_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN article.authored_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE author (id UUID NOT NULL, name VARCHAR(30) NOT NULL, slug VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('COMMENT ON COLUMN author.id IS \'(DC2Type:uuid)\'');
         $this->addSql('CREATE TABLE paragraph (id INT NOT NULL, article_id UUID NOT NULL, content TEXT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
