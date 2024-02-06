@@ -71,6 +71,10 @@ class Article
     #[Groups(['article:read'])]
     #[ApiFilter(SearchFilter::class, properties: ['author.id' => 'exact'])]
     private ?Author $author = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['article:read'])]
+    private ?\DateTimeImmutable $authoredAt = null;
     
     public function __construct()
     {
@@ -211,6 +215,18 @@ class Article
     public function setAuthor(?Author $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getAuthoredAt(): ?\DateTimeImmutable
+    {
+        return $this->authoredAt;
+    }
+
+    public function setAuthoredAt(?\DateTimeImmutable $authoredAt): static
+    {
+        $this->authoredAt = $authoredAt;
 
         return $this;
     }

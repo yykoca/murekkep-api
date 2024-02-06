@@ -7,6 +7,7 @@ use App\Entity\Paragraph;
 use App\Repository\AuthorRepository;
 use App\Repository\ArticleRepository;
 use App\Service\ReadingTimeService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,6 +62,11 @@ class ArticleController extends AbstractController
             
             $author = $authorRepository->findOneBy(['id' => $requestData['author']]);
             $article->setAuthor($author);
+
+            if (isset($requestData['authoredAt'])) {
+                $authoredAt = new DateTimeImmutable($requestData['authoredAt']);
+                $article->setAuthoredAt($authoredAt);
+            }
 
             $entityManager->persist($article);
             $entityManager->flush();
