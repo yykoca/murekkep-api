@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/authors')]
+#[Route('/authors')]
 class AuthorController extends AbstractController
 {
     #[Route('/', name: 'author_index')]
