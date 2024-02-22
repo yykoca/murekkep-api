@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Article;
-use App\Entity\Paragraph;
 use App\Repository\AuthorRepository;
 use App\Repository\ArticleRepository;
 use App\Service\ReadingTimeService;
@@ -34,13 +33,12 @@ class ArticleController extends AbstractController
         $requestData = json_decode($request->getContent(), true);
 
         if (
-            !isset($requestData['title']) || 
-            !isset($requestData['name']) || 
-            !isset($requestData['description']) || 
-            !isset($requestData['paragraphs']) ||
+            !isset($requestData['title']) ||
+            !isset($requestData['name']) ||
+            !isset($requestData['description']) ||
             !isset($requestData['author'])
             ) {
-            throw new \InvalidArgumentException('All of "title", "name", "description", "paragraphs", and "author" must be provided for create.');
+            throw new \InvalidArgumentException('All of "title", "name", "description" and "author" must be provided for create.');
         }
 
         try {
@@ -51,15 +49,9 @@ class ArticleController extends AbstractController
                     ->setContent($requestData['content'])
                     ->setImage($requestData['image']);
 
-            foreach ($requestData['paragraphs'] as $content) {
-                $paragraph = new Paragraph();
-                $paragraph->setContent($content['content']);
-                $article->addParagraph($paragraph);
-            }
-
             $readingTime = $readingTimeService->estimateReadingTime($article);
             $article->setReadingTime($readingTime);
-            
+
             $author = $authorRepository->findOneBy(['id' => $requestData['author']]);
             $article->setAuthor($author);
 
@@ -77,30 +69,6 @@ class ArticleController extends AbstractController
         }
     }
 
-    #[Route('/{slug}/new-paragraph', name: 'article_paragraph_new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
-    public function newParagraph(Article $article, Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {   
-        $requestData = json_decode($request->getContent(), true);
-
-        if (!isset($requestData['content']) ) {
-            throw new \InvalidArgumentException('"Content" must be provided for create.');
-        }
-        
-        $paragraph = new Paragraph();
-        $paragraph->setContent($requestData['content']);
-        $article->addParagraph($paragraph);
-
-        $entityManager->persist($paragraph);
-        $entityManager->flush();
-
-        return $this->json(['message' => 'Saved new paragraph with id ' . $paragraph->getId()]);
-        try {
-        } catch (\Exception $e) {
-            return $this->json(['error' => 'An error occurred while saving the paragraph.'], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
     #[Route('/{slug}', name: 'article_show')]
     public function show(Article $article, ArticleRepository $articleRepository): JsonResponse
     {   
@@ -109,8 +77,6 @@ class ArticleController extends AbstractController
         return $this->json($article);
     }
 
-    
-
     #[Route('/{slug}/edit', name: 'article_edit', methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN', message: 'You are not allowed to access this route.')]
     public function update(Article $article, Request $request, EntityManagerInterface $entityManager, ReadingTimeService $readingTimeService): Response
@@ -118,8 +84,8 @@ class ArticleController extends AbstractController
         try {
             $requestData = json_decode($request->getContent(), true);
     
-            if (!isset($requestData['title']) && !isset($requestData['name']) && !isset($requestData['description']) && !isset($requestData['paragraphs'])) {
-                throw new \InvalidArgumentException('At least one of "title", "name", or "description" must be provided for update.');
+            if (!isset($requestData['title']) && !isset($requestData['name']) && !isset($requestData['description'])) {
+                throw new \InvalidArgumentException('At least one of "title", "name" or "description" must be provided for update.');
             }
 
             if (isset($requestData['title']) && $requestData['title'] !== $article->getTitle()) {
@@ -134,23 +100,6 @@ class ArticleController extends AbstractController
                 $article->setDescription($requestData['description']);
             }
 
-            if (isset($requestData['paragraphs'])) {
-                foreach ($article->getParagraphs() as $paragraph) {
-                    foreach ($requestData['paragraphs'] as $key=>$value) {
-                        if (isset($value['id']) && $paragraph->getId() == $value['id']) {
-                            $paragraph->setContent($value['content']);
-                            unset($requestData['paragraphs'][$key]);
-                        }
-                    }
-                }
-    
-                foreach ($requestData['paragraphs'] as $content) {
-                    $newParagraph = new Paragraph();
-                    $newParagraph->setContent($content['content']);
-                    $article->addParagraph($newParagraph);
-                }
-            }
-            
             $article->setReadingTime($readingTimeService->estimateReadingTime($article));
 
             $entityManager->flush();

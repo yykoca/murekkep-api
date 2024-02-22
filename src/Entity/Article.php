@@ -7,8 +7,6 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
@@ -51,10 +49,6 @@ class Article
     #[ApiProperty(identifier:true)]
     private ?string $slug = null;
 
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: Paragraph::class, cascade: ['persist', 'remove'])]
-    #[Groups(['article:read'])]
-    private Collection $paragraphs;
-    
     #[ORM\Column]
     #[Groups(['article:read'])]
     private float $readingTime;
@@ -75,18 +69,12 @@ class Article
     #[ORM\Column(nullable: true)]
     #[Groups(['article:read'])]
     private ?\DateTimeImmutable $authoredAt = null;
-    
-    public function __construct()
-    {
-        $this->paragraphs = new ArrayCollection();
-    }
-    
+
     #[Groups(['article:read'])]
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
-
 
     public function getId(): ?Uuid
     {
@@ -137,36 +125,6 @@ class Article
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Paragraph>
-     */
-    public function getParagraphs(): Collection
-    {
-        return $this->paragraphs;
-    }
-
-    public function addParagraph(Paragraph $paragraph): self
-    {
-        if (!$this->paragraphs->contains($paragraph)) {
-            $this->paragraphs->add($paragraph);
-            $paragraph->setArticle($this);
-        }
-
-        return $this;
-    }
-
-    public function removeParagraph(Paragraph $paragraph): self
-    {
-        if ($this->paragraphs->removeElement($paragraph)) {
-            // set the owning side to null (unless already changed)
-            if ($paragraph->getArticle() === $this) {
-                $paragraph->setArticle(null);
-            }
-        }
 
         return $this;
     }
