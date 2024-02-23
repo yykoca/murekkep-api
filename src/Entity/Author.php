@@ -20,15 +20,17 @@ class Author
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['article:read'])]
     private ?Uuid $id;
-
+    
 
     #[ORM\Column(length: 30)]
     #[Groups(['article:read'])]
     private ?string $name = null;
-
+    
     #[ORM\Column(length: 255)]
     #[Slug(fields: ['name'])]
+    #[Groups(['article:read'])]
     private ?string $slug = null;
     
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Article::class)]
