@@ -38,7 +38,7 @@ class ArticleController extends AbstractController
             !isset($requestData['description']) ||
             !isset($requestData['author'])
             ) {
-            throw new \InvalidArgumentException('All of "title", "name", "description" and "author" must be provided for create.');
+            throw new \InvalidArgumentException('All of \'title\', \'name\', \'description\' and \'author\' must be provided for create.');
         }
 
         try {
@@ -85,7 +85,7 @@ class ArticleController extends AbstractController
             $requestData = json_decode($request->getContent(), true);
     
             if (!isset($requestData['title']) && !isset($requestData['name']) && !isset($requestData['description'])) {
-                throw new \InvalidArgumentException('At least one of "title", "name" or "description" must be provided for update.');
+                throw new \InvalidArgumentException('At least one of \'title\', \'name\' or \'description\' must be provided for update.');
             }
 
             if (isset($requestData['title']) && $requestData['title'] !== $article->getTitle()) {

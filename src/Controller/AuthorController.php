@@ -31,7 +31,7 @@ class AuthorController extends AbstractController
         $requestData = json_decode($request->getContent(), true);
 
         if (!isset($requestData['name'])) {
-            throw new \InvalidArgumentException('"name" must be provided for create.');
+            throw new \InvalidArgumentException('\'name\' must be provided for create.');
         }
         
         try {
