@@ -44,8 +44,7 @@ class RegistrationController extends AbstractController
 
 
         return $this->json([
-            'user'  => $user->getUserIdentifier(),
-            'hashedPassword' => $hashedPassword,
+            'user'  => $user->getUserIdentifier()
         ]);
     }
 }
