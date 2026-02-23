@@ -5,5 +5,5 @@ services:
   database:
     ports:
       - 5430:5432
-    container_name: "ykoca-blog-database"
+    container_name: "database"
 ###< doctrine/doctrine-bundle ###
